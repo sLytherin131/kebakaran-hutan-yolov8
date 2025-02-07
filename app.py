@@ -3,15 +3,16 @@ import torch
 import cv2
 import numpy as np
 from PIL import Image
+from ultralytics import YOLO
 
-# Load model YOLOv5m
-MODEL_PATH = "yolov5_best_model.pt"  # Sesuaikan dengan path model Anda
-model = torch.hub.load('ultralytics/yolov5', 'custom', path=MODEL_PATH, force_reload=True)
+# Load model YOLOv8 yang sudah dilatih
+MODEL_PATH = "yolov8_best_model.pt"  # Sesuaikan dengan path model Anda
+model = YOLO(MODEL_PATH)
 
-# Fungsi deteksi kebakaran hutan
+# Fungsi untuk mendeteksi kebakaran hutan pada gambar
 def detect_fire(image):
     results = model(image)  # Lakukan deteksi
-    detections = results.xyxy[0].cpu().numpy()  # Ambil bounding box
+    detections = results[0].boxes.data.cpu().numpy()  # Ambil bounding box
 
     for box in detections:
         x1, y1, x2, y2, conf, cls = box
@@ -23,7 +24,7 @@ def detect_fire(image):
     return image
 
 # Konfigurasi UI Streamlit
-st.title("🔥 Deteksi Kebakaran Hutan Real-Time")
+st.title("🔥 Deteksi Kebakaran Hutan Real-Time dengan YOLOv8")
 st.write("Gunakan kamera atau unggah gambar untuk mendeteksi kebakaran hutan.")
 
 # Pilih sumber input: Kamera atau Upload Gambar
@@ -46,4 +47,4 @@ elif option == "Upload Gambar":
         image = Image.open(uploaded_file)
         image = np.array(image)
         detected_image = detect_fire(image)
-        st.image(detected_image, channels="RGB", use_column_width=True)
+        st.image(detected_image, channels="RGB", use_container_width=True)
