@@ -1,6 +1,6 @@
 import streamlit as st
 import torch
-import cv2
+import cv2 as cv
 import numpy as np
 from PIL import Image
 from ultralytics import YOLO
